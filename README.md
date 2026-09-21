@@ -1,2 +1,2 @@
-# Threat-Hunt---Second-Vector
+# Threat-Hunt--Second-Vector
 Threat hunt scenario report

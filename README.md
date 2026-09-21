@@ -431,7 +431,7 @@ EmailEvents
 | Created | 03:28:22 UTC |
 | Source IP | 103.69.224.136 |
 | Action | MoveToFolder: Archive |
-| Filter | From: j.reynolds@lognpacific.org |
+| Filter | From: j.reynolds @lognpacific.org |
 | StopProcessingRules | True |
 | Table | `OfficeActivity` (Operation: New-InboxRule) |
 
@@ -470,8 +470,8 @@ Moving to Archive rather than deleting is a deliberate evasion choice. A deletio
 | Rule name | `Backup Copy` |
 | Created | 03:32:31 UTC |
 | Source IP | 103.69.224.136 |
-| Action | ForwardTo: merovingian1337@proton.me |
-| Filter | From: j.reynolds@lognpacific.org |
+| Action | ForwardTo: merovingian1337 @proton.me |
+| Filter | From: j.reynolds @lognpacific.org |
 | StopProcessingRules | True |
 | External destination | Proton Mail (end-to-end encrypted, anonymous) |
 
@@ -753,7 +753,7 @@ SigninLogs
 |---|---|
 | Console | Power Platform admin center |
 | URL | admin.powerautomate.microsoft.com / admin.powerplatform.microsoft.com |
-| Path | Environment → Flows → filter by owner m.smith@lognpacific.org |
+| Path | Environment → Flows → filter by owner m.smith @lognpacific.org |
 | Action | Delete (not disable. a disabled flow can be re-enabled if the credential becomes live) |
 
 > **Finding:** The flow is not an Exchange object and is not visible in Sentinel. It lives entirely in Power Automate's own management plane. An analyst checking `Get-InboxRule` or reviewing Sentinel alerts would walk past it entirely. This governance gap in which two admin teams (Exchange/Security and Power Platform) own overlapping surfaces is a structural problem worth raising beyond this individual incident.

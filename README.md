@@ -52,7 +52,7 @@ The investigation took place across the **lognpacific.org** Microsoft 365 tenant
 
 The Low-severity "anonymized IP" alert that night shift left in the queue was a full account compromise, not a false positive. Entra ID Protection's own model auto-dismissed five of six risk detections on this session as "ai-confirmed safe," leaving only one flagged. While the same session, riding a single replayed token that never completed live MFA, reached seven applications, exfiltrated three targeted files, built two Exchange inbox rules, stood up an independent Power Automate flow, and sent a fraudulent banking-details email to a finance colleague.
 
-The recipient's reply six hours later was automatically intercepted and forwarded out of the tenant by infrastructure the attacker no longer needed to be signed in to operate. Conditional Access did not fail to stop this session — it never evaluated it. The authentication path (token replay, not a fresh interactive logon) sits outside the events CA inspects. Session and token lifecycle control is the actual control surface that mattered here.
+The recipient's reply six hours later was automatically intercepted and forwarded out of the tenant by infrastructure the attacker no longer needed to be signed in to operate. Conditional Access did not fail to stop this session since it was never evaluated. The authentication path (token replay, not a fresh interactive logon) sits outside the events CA inspects. Session and token lifecycle control is the actual control surface that mattered here.
 
 ---
 
@@ -144,7 +144,7 @@ AADUserRiskEvents
 | project TimeGenerated, RiskEventType, RiskLevel, RiskState, RiskDetail, IpAddress
 ```
 
-> **Finding:** The friendly incident title ("Anonymous IP address") is a display label. The stored enum value — `anonymizedIPAddress` — is what appears in the raw telemetry and is what analysts should reference when writing detection rules or cross-referencing with threat intel.
+> **Finding:** The friendly incident title ("Anonymous IP address") is a display label. The stored enum value `anonymizedIPAddress`, is what appears in the raw telemetry and is what analysts should reference when writing detection rules or cross-referencing with threat intel.
 
 ---
 
@@ -396,7 +396,7 @@ EmailEvents
 |---|---|
 | UPN | `j.reynolds@lognpacific.org` |
 | Role | Finance (payment processing) |
-| Also flagged | Risk event same day from IP 185.130.187.4 — remediated via MFA |
+| Also flagged | Risk event same day from IP 185.130.187.4 → remediated via MFA |
 
 > **Finding:** Jay Reynolds was both the social-engineering target for the fraud and himself a risk-flagged identity on the same day. His own sign-in anomaly (different IP, different geo, same date) was remediated via risk-based MFA challenge, suggesting he may have been targeted in parallel, or that the attacker probed his account as a secondary path.
 
@@ -549,7 +549,7 @@ Three files, pulled in a ~1-second window, after a browse of the folder structur
 | Filename | `VPN-Access-Credentials.txt` |
 | Significance | Provides a network-level foothold independent of the Entra session |
 
-> **Finding:** This file widens the scope of the compromise beyond the Microsoft 365 identity layer. VPN credentials give the attacker a path into the organization's network that does not depend on m.smith's Entra token at all — a second, parallel persistence path that would survive even a full Entra session revocation and password reset.
+> **Finding:** This file widens the scope of the compromise beyond the Microsoft 365 identity layer. VPN credentials give the attacker a path into the organization's network that does not depend on m.smith's Entra token at all; a second, parallel persistence path that would survive even a full Entra session revocation and password reset.
 
 ---
 
@@ -734,8 +734,8 @@ SigninLogs
 
 | Step | Action | Why |
 |---|---|---|
-| **1 — must be first** | Revoke sessions / refresh tokens | Invalidates the hijacked token. Without this, a live session can simply rebuild any deleted rule or flow within seconds |
-| 2 | Reset m.smith's password | Closes the path for a new token being issued against the old credential. A reset alone is insufficient — see Q37 |
+| **1 → must be first** | Revoke sessions / refresh tokens | Invalidates the hijacked token. Without this, a live session can simply rebuild any deleted rule or flow within seconds |
+| 2 | Reset m.smith's password | Closes the path for a new token being issued against the old credential. A reset alone is insufficient. see Q37 |
 | 3 | Delete inbox rules | Safe to remove once the session is dead |
 | 4 | Delete the Power Automate flow | Safe to remove once the session is dead |
 
@@ -743,7 +743,7 @@ SigninLogs
 
 ---
 
-### Q35 — Where the Flow Is Removed
+### Q35: Where the Flow Is Removed
 
 **Question:** That flow can't be removed from Sentinel or the Exchange rules. Where do you go to find and delete it.
 
@@ -781,7 +781,7 @@ SigninLogs
 
 **Question:** Someone on the bridge wants to reset m.smith's password and call it done. You know better. Tell me why a password reset alone doesn't lock this attacker out, and what action has to come first.
 
-**Answer: The refresh token survives a password reset — revoking sessions is what actually kills it**
+**Answer: The refresh token survives a password reset; revoking sessions is what actually kills it**
 
 | | |
 |---|---|
@@ -843,15 +843,15 @@ Every successful sign-in in this session carried `authenticationMethod: "Previou
 
 | Priority | Action | Rationale |
 |---|---|---|
-| **Critical** | Revoke m.smith's sessions/refresh tokens immediately | Must happen first — cleanup before revocation can be rebuilt by the live session |
+| **Critical** | Revoke m.smith's sessions/refresh tokens immediately | Must happen first;  cleanup before revocation can be rebuilt by the live session |
 | **Critical** | Reset m.smith's password (after revocation) | Prevents a new token being issued against the old credential |
 | **Critical** | Delete inbox rules `Invoice Processing` and `Backup Copy` | Stops concealment and exfiltration at the Exchange layer |
-| **Critical** | Delete the Power Automate flow in Power Platform admin center | The flow survives if only the inbox rules are removed — must be killed separately |
+| **Critical** | Delete the Power Automate flow in Power Platform admin center | The flow survives if only the inbox rules are removed, so it must be killed separately |
 | **High** | Notify Finance and Jay Reynolds via out-of-band channel | The compromised mailbox cannot be trusted for notification |
 | **High** | Hold any pending payments to Pacific IT pending verification | Determine whether a fraudulent payment was actually redirected |
-| **High** | Review j.reynolds and mohammed_admin risk events independently | Both show same-day risk detections — confirm neither was independently compromised |
+| **High** | Review j.reynolds and mohammed_admin risk events independently | Both show same-day risk detections which confirm neither was independently compromised |
 | **Medium** | Audit the Power Automate flow's run history before deletion | Establish how many of Reynolds' replies were exfiltrated |
-| **Medium** | Review VPN access logs for m.smith credentials post-11 June | `VPN-Access-Credentials.txt` was exfiltrated — assume those credentials are burned |
+| **Medium** | Review VPN access logs for m.smith credentials post-11 June | `VPN-Access-Credentials.txt` was exfiltrated|
 | **Medium** | Check for additional flows under m.smith in Power Automate | Confirm there is no second flow before closing the incident |
 
 ---
@@ -861,13 +861,13 @@ Every successful sign-in in this session carried `authenticationMethod: "Previou
 | Priority | Recommendation | Context |
 |---|---|---|
 | **Critical** | Implement Continuous Access Evaluation (CAE) | CAE propagates session revocation near-instantly to M365 services |
-| **Critical** | Close the Conditional Access gap for token-replay paths | CA evaluated zero of 29 sign-ins — `notApplied` at this volume is a coverage gap, not a policy failure |
+| **Critical** | Close the Conditional Access gap for token-replay paths | CA evaluated zero of 29 sign-ins, `notApplied` at this volume is a coverage gap, not a policy failure |
 | **High** | Implement Power Automate governance: DLP policies and flow creation approval gates | A standard finance account created a flow with `Mail.Send`/`Mail.ReadWrite.Shared` scopes with no approval gate |
-| **High** | Alert on `New-InboxRule` operations creating external forward rules | The auto-alert fired but was sent by email to a shared inbox — not actioned. The signal existed; the workflow failed |
+| **High** | Alert on `New-InboxRule` operations creating external forward rules | The auto-alert fired but was sent by email to a shared inbox (not actioned). The signal existed; the workflow failed |
 | **High** | Alert on Flow Portal or App Service sign-ins for non-developer accounts | Finance users authenticating to automation platforms is an anomaly signal that should generate a SIEM alert |
-| **Medium** | Tune Entra ID Protection auto-dismissal for finance accounts | Five of six detections were auto-cleared during an active compromise — finance accounts need a lower threshold |
+| **Medium** | Tune Entra ID Protection auto-dismissal for finance accounts | Five of six detections were auto-cleared during an active compromise. Finance accounts need a lower threshold |
 | **Medium** | Monitor inbox rules forwarding to external consumer mail domains | Proton Mail, Gmail as forward destinations is a BEC signal monitorable via `OfficeActivity` continuously |
-| **Low** | Require MFA step-up for high-risk operations | Token replay worked because no step required a fresh factor — step-up auth on file downloads and rule creation would have broken the session |
+| **Low** | Require MFA step-up for high-risk operations | Token replay worked because no step required a fresh factor. Step-up auth on file downloads and rule creation would have broken the session |
 
 ---
 

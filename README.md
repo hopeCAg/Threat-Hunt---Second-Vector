@@ -11,15 +11,15 @@
 - [Overview](#overview)
 - [Environment](#environment)
 - [Executive Summary](#executive-summary)
-- [Phase 00 — Incident Handoff](#phase-00--incident-handoff)
-- [Phase 01 — Triage](#phase-01--triage)
-- [Phase 02 — Session Scope](#phase-02--session-scope)
-- [Phase 03 — Directory Recon](#phase-03--directory-recon)
-- [Phase 04 — The Fraud](#phase-04--the-fraud)
-- [Phase 05 — Persistence Hunt](#phase-05--persistence-hunt)
-- [Phase 06 — Data Theft](#phase-06--data-theft)
-- [Phase 07 — The Plant and the Trigger](#phase-07--the-plant-and-the-trigger)
-- [Phase 08 — Correlation & Containment](#phase-08--correlation--containment)
+- [Phase 00  Incident Handoff](#phase-00--incident-handoff)
+- [Phase 01  Triage](#phase-01--triage)
+- [Phase 02  Session Scope](#phase-02--session-scope)
+- [Phase 03  Directory Recon](#phase-03--directory-recon)
+- [Phase 04  The Fraud](#phase-04--the-fraud)
+- [Phase 05  Persistence Hunt](#phase-05--persistence-hunt)
+- [Phase 06  Data Theft](#phase-06--data-theft)
+- [Phase 07  The Plant and the Trigger](#phase-07--the-plant-and-the-trigger)
+- [Phase 08  Correlation & Containment](#phase-08--correlation--containment)
 - [MITRE ATT&CK Mapping](#mitre-attck-mapping)
 - [Indicators of Compromise](#indicators-of-compromise)
 - [Containment Actions](#containment-actions)
@@ -34,7 +34,7 @@
 | Operation | Second Vector: M365 Identity Compromise |
 | Environment | Microsoft Defender XDR + Microsoft Sentinel |
 | Workspace | lognpacific.org tenant |
-| Investigation Window | 11 June 2026, 03:00 UTC — 13:00 UTC |
+| Investigation Window | 11 June 2026, 03:00 UTC to 13:00 UTC |
 | Anchor Timestamp | 11 June 2026, 03:13 UTC |
 | Scope | Cloud-only intrusion; identity, mail, files, Graph |
 | Phases | 8 gated |
@@ -56,9 +56,9 @@ The recipient's reply six hours later was automatically intercepted and forwarde
 
 ---
 
-## Phase 00 — Incident Handoff
+## Phase 00  Incident Handoff
 
-### Q00 — Acceptance Gate
+### Q00: Acceptance Gate
 
 Night shift triaged Incident 87241: a Microsoft Entra ID Protection alert on a finance user, rated Low, flagged for a sign-in from an anonymous IP address on `m.smith`. They found nothing they could act on and left it in the queue. The hunt was picked up at day shift.
 
@@ -66,7 +66,7 @@ Night shift triaged Incident 87241: a Microsoft Entra ID Protection alert on a f
 
 ---
 
-## Phase 01 — Triage
+## Phase 01  Triage
 
 ### Q01: The Compromised Principal
 
@@ -184,7 +184,7 @@ AADUserRiskEvents
 
 ---
 
-## Phase 02 — Session Scope
+## Phase 02  Session Scope
 
 ### Q07: How the Session Beat MFA
 
@@ -288,7 +288,7 @@ SigninLogs
 
 ---
 
-## Phase 03 — Directory Recon
+## Phase 03  Directory Recon
 
 ### Q12: MFA-Posture Profiling
 
@@ -341,7 +341,7 @@ MicrosoftGraphActivityLogs
 
 ---
 
-## Phase 04 — The Fraud
+## Phase 04  The Fraud
 
 ### Q14: The Fraudulent Request
 
@@ -417,7 +417,7 @@ EmailEvents
 
 ---
 
-## Phase 05 — Persistence Hunt
+## Phase 05  Persistence Hunt
 
 ### Q18: The Concealment Rule
 
@@ -491,7 +491,7 @@ Both rules filter on `From: j.reynolds@lognpacific.org` , which acts on mail *co
 
 ---
 
-## Phase 06 — Data Theft
+## Phase 06  Data Theft
 
 ### Q22: The Exfil Operation
 
@@ -570,7 +570,7 @@ Three files, pulled in a ~1-second window, after a browse of the folder structur
 
 ---
 
-## Phase 07 — The Plant and the Trigger
+## Phase 07  The Plant and the Trigger
 
 ### Q26: Disprove the Innocent Explanation
 
@@ -652,7 +652,7 @@ SigninLogs
 
 ---
 
-## Phase 08 — Correlation & Containment
+## Phase 08  Correlation & Containment
 
 ### Q30: The Automation Source IP
 
